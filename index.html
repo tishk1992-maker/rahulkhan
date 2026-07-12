@@ -55,9 +55,10 @@ const analytics = getAnalytics(app);
             var trackNumber = document.getElementById("trackInput").value;
             var audioPlayer = document.getElementById("audioPlayer");
             var audioSource = document.getElementById("audioSource");
-            
+         
             // Constructs the file path (e.g., "1.mp3")
             audioSource.src = trackNumber + ".mp3";
+            audioplayer.load()
             audioPlayer.play();
         }
      document.getElementById('playButton').addEventListener('click', playTrack);
