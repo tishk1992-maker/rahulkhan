@@ -66,12 +66,6 @@ onValue(trackRef, (snapshot) => {
     var trackNumber = document.getElementById("trackInput").value;
     set(trackRef, trackNumber);
 }
-       
-            // Constructs the file path (e.g., "1.mp3")
-            audioSource.src = trackNumber + ".mp3";
-            audioPlayer.load()
-            audioPlayer.play();
-        }
      document.getElementById('playButton').addEventListener('click', playTrack);
     </script>
 </body>
