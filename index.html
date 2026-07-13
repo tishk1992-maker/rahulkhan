@@ -8,11 +8,7 @@
     <h1>Welcome to Rahul Khan World</h1>
     <p>Click a track to play it:</p>
 
-    <div id="trackButtons">
-        <button onclick="updateTrack('1')">Play Track 1</button>
-        <button onclick="updateTrack('2')">Play Track 2</button>
-        <button onclick="updateTrack('3')">Play Track 3</button>
-    </div>
+    <div id="trackButtons"></div>
 
     <br><br>
 
@@ -39,28 +35,32 @@
         const db = getDatabase(app);
         const trackRef = ref(db, 'currentTrack');
 
-        // Logic for when you click a button
+        // Dynamically generate 10 buttons
+        const container = document.getElementById("trackButtons");
+        for (let i = 1; i <= 10; i++) {
+            const btn = document.createElement("button");
+            btn.innerHTML = "Play Track " + i;
+            btn.onclick = () => updateTrack(i.toString());
+            container.appendChild(btn);
+        }
+
         window.updateTrack = function(trackNumber) {
             const audioPlayer = document.getElementById("audioPlayer");
             const audioSource = document.getElementById("audioSource");
             
-            // Force reset: clear source then set new one
             audioPlayer.pause();
             audioSource.src = trackNumber + ".mp3";
             audioPlayer.load();
             audioPlayer.play().catch(e => console.log("Play error: ", e));
             
-            // Sync with Firebase
             set(trackRef, trackNumber);
         };
 
-        // Logic for others syncing to your play
         onValue(trackRef, (snapshot) => {
             const trackName = snapshot.val();
             const audioPlayer = document.getElementById("audioPlayer");
             const audioSource = document.getElementById("audioSource");
             
-            // Only update if the current loaded track is different from the DB
             if (trackName && !audioSource.src.includes(trackName + ".mp3")) {
                 audioSource.src = trackName + ".mp3";
                 audioPlayer.load();
