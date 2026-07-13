@@ -3,12 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <title>Rahul Khan World</title>
+    <style>
+        .button-row { margin-bottom: 10px; }
+        .button-row button { margin: 2px; padding: 10px; }
+    </style>
 </head>
 <body>
     <h1>Welcome to Rahul Khan World</h1>
     <p>Click a track to play it:</p>
 
-    <div id="trackButtons"></div>
+    <div id="row1" class="button-row"></div>
+    <div id="row2" class="button-row"></div>
 
     <br><br>
 
@@ -35,13 +40,18 @@
         const db = getDatabase(app);
         const trackRef = ref(db, 'currentTrack');
 
-        // Dynamically generate 10 buttons
-        const container = document.getElementById("trackButtons");
-        for (let i = 1; i <= 10; i++) {
+        // Function to create buttons
+        function createButton(label, trackValue, containerId) {
             const btn = document.createElement("button");
-            btn.innerHTML = "Play Track " + i;
-            btn.onclick = () => updateTrack(i.toString());
-            container.appendChild(btn);
+            btn.innerHTML = label;
+            btn.onclick = () => updateTrack(trackValue);
+            document.getElementById(containerId).appendChild(btn);
+        }
+
+        // Generate the two rows
+        for (let i = 1; i <= 5; i++) {
+            createButton(i.toString(), i.toString(), "row1");
+            createButton(i + "A", i.toString(), "row2");
         }
 
         window.updateTrack = function(trackNumber) {
