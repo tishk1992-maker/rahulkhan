@@ -4,16 +4,15 @@
     <meta charset="UTF-8">
     <title>Rahul Khan World</title>
     <style>
-        .button-row { margin-bottom: 10px; }
-        .button-row button { margin: 2px; padding: 10px; }
+        #trackButtons { margin-top: 20px; }
+        button { padding: 15px 25px; margin: 5px; cursor: pointer; font-size: 16px; }
     </style>
 </head>
 <body>
     <h1>Welcome to Rahul Khan World</h1>
-    <p>Click a track to play it:</p>
+    <p>Select a track. The player will sync in real-time for everyone:</p>
 
-    <div id="row1" class="button-row"></div>
-    <div id="row2" class="button-row"></div>
+    <div id="trackButtons"></div>
 
     <br><br>
 
@@ -40,41 +39,29 @@
         const db = getDatabase(app);
         const trackRef = ref(db, 'currentTrack');
 
-        // Function to create buttons
-        function createButton(label, trackValue, containerId) {
-            const btn = document.createElement("button");
-            btn.innerHTML = label;
-            btn.onclick = () => updateTrack(trackValue);
-            document.getElementById(containerId).appendChild(btn);
-        }
-
-        // Generate the two rows
+        // Create buttons 1-5
+        const container = document.getElementById("trackButtons");
         for (let i = 1; i <= 5; i++) {
-            createButton(i.toString(), i.toString(), "row1");
-            createButton(i + "A", i.toString(), "row2");
+            const btn = document.createElement("button");
+            btn.innerHTML = i;
+            btn.onclick = () => set(trackRef, i.toString()); // Only write to DB
+            container.appendChild(btn);
         }
 
-        window.updateTrack = function(trackNumber) {
-            const audioPlayer = document.getElementById("audioPlayer");
-            const audioSource = document.getElementById("audioSource");
-            
-            audioPlayer.pause();
-            audioSource.src = trackNumber + ".mp3";
-            audioPlayer.load();
-            audioPlayer.play().catch(e => console.log("Play error: ", e));
-            
-            set(trackRef, trackNumber);
-        };
-
+        // Dedicated Listener: This runs automatically whenever the database changes
         onValue(trackRef, (snapshot) => {
-            const trackName = snapshot.val();
+            const trackNumber = snapshot.val();
             const audioPlayer = document.getElementById("audioPlayer");
             const audioSource = document.getElementById("audioSource");
             
-            if (trackName && !audioSource.src.includes(trackName + ".mp3")) {
-                audioSource.src = trackName + ".mp3";
-                audioPlayer.load();
-                audioPlayer.play().catch(e => console.log("Sync play error: ", e));
+            if (trackNumber) {
+                const newSource = trackNumber + ".mp3";
+                // Only update and play if it's a different track
+                if (!audioSource.src.includes(newSource)) {
+                    audioSource.src = newSource;
+                    audioPlayer.load();
+                    audioPlayer.play().catch(e => console.log("Auto-play blocked by browser policy"));
+                }
             }
         });
     </script>
