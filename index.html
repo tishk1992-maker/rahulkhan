@@ -52,7 +52,20 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
-        function playTrack() {
+const db = getDatabase(app);
+const trackRef = ref(db, 'currentTrack');
+onValue(trackRef, (snapshot) => {
+    const data = snapshot.val();
+    const audioPlayer = document.getElementById("audioPlayer");
+    const audioSource = document.getElementById("audioSource");
+    audioSource.src = data + ".mp3";
+    audioPlayer.load();
+    audioPlayer.play();
+});
+       function playTrack() {
+    var trackNumber = document.getElementById("trackInput").value;
+    set(trackRef, trackNumber);
+}
             var trackNumber = document.getElementById("trackInput").value;
             var audioPlayer = document.getElementById("audioPlayer");
             var audioSource = document.getElementById("audioSource");
