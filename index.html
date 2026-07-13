@@ -5,7 +5,8 @@
     <title>Rahul Khan World</title>
     <style>
         #trackButtons { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
-        button { padding: 15px 25px; cursor: pointer; font-size: 16px; }
+        button { padding: 15px 25px; cursor: pointer; font-size: 16px; border-radius: 8px; border: 1px solid #ccc; }
+        button:hover { background-color: #f0f0f0; }
     </style>
 </head>
 <body>
@@ -39,30 +40,35 @@
         const db = getDatabase(app);
         const trackRef = ref(db, 'currentTrack');
 
-        // Dynamically create 10 buttons
+        const audioPlayer = document.getElementById("audioPlayer");
+        const audioSource = document.getElementById("audioSource");
+
+        // 1. Create 10 buttons dynamically
         const container = document.getElementById("trackButtons");
         for (let i = 1; i <= 10; i++) {
             const btn = document.createElement("button");
             btn.innerHTML = "Track " + i;
-            // The button ONLY updates the database
             btn.onclick = () => set(trackRef, i.toString());
             container.appendChild(btn);
         }
 
-        // The listener updates the player whenever the database changes
+        // 2. Real-time sync listener
         onValue(trackRef, (snapshot) => {
             const trackNumber = snapshot.val();
-            if (trackNumber) {
-                const audioPlayer = document.getElementById("audioPlayer");
-                const audioSource = document.getElementById("audioSource");
-                const newSource = trackNumber + ".mp3";
+            if (!trackNumber) return;
 
-                // Only update and play if the track is different from current
-                if (!audioSource.src.includes(newSource)) {
-                    audioSource.src = newSource;
-                    audioPlayer.load();
-                    audioPlayer.play().catch(e => console.log("Waiting for user interaction..."));
-                }
+            const newSource = trackNumber + ".mp3";
+
+            // Only change and play if it's a new track
+            if (audioSource.src.indexOf(newSource) === -1) {
+                audioPlayer.pause();
+                audioSource.src = newSource;
+                audioPlayer.load();
+                audioPlayer.play().catch(e => console.log("Playback interaction required"));
+            } else {
+                // If it's the SAME track button clicked again, just restart it
+                audioPlayer.currentTime = 0;
+                audioPlayer.play().catch(e => console.log("Playback error"));
             }
         });
     </script>
