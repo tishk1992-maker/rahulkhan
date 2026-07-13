@@ -2,63 +2,61 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Rahul Khan World</title>
-    <style>
-        body { font-family: sans-serif; text-align: center; padding: 20px; }
-        button { padding: 10px 20px; margin: 5px; cursor: pointer; }
-    </style>
+    <title>Rahul Khan World - Uploader</title>
 </head>
 <body>
     <h1>Welcome to Rahul Khan World</h1>
-    <p>Click any track to start (or sync) the audio:</p>
+    
+    <input type="file" id="fileInput" accept="audio/mpeg">
+    <button onclick="uploadTrack()">Upload Track</button>
 
-    <div id="trackButtons">
-        <button onclick="updateTrack('1')">Play Track 1</button>
-        <button onclick="updateTrack('2')">Play Track 2</button>
-        <button onclick="updateTrack('3')">Play Track 3</button>
-    </div>
-
-    <br><br>
-
-    <audio id="audioPlayer" controls>
-        <source id="audioSource" src="" type="audio/mpeg">
-    </audio>
+    <hr>
+    <h3>Available Tracks:</h3>
+    <div id="trackList"></div> <br>
+    <audio id="audioPlayer" controls><source id="audioSource" src=""></audio>
 
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-        import { getDatabase, ref, set, onValue } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+        import { getDatabase, ref, set, onValue, push } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+        import { getStorage, ref as sRef, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js';
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyD2H-Ccdm4fAq4qtgXqwVOAz4d7z115Ucw",
-            authDomain: "rahulkhan-a4f12.firebaseapp.com",
-            databaseURL: "https://rahulkhan-a4f12-default-rtdb.firebaseio.com",
-            projectId: "rahulkhan-a4f12",
-            storageBucket: "rahulkhan-a4f12.firebasestorage.app",
-            messagingSenderId: "324760694486",
-            appId: "1:324760694486:web:a57ca86603fd9911fc2377"
-        };
-
+        const firebaseConfig = { /* ... your config ... */ };
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
-        const trackRef = ref(db, 'currentTrack');
+        const storage = getStorage(app);
 
-        const audioPlayer = document.getElementById("audioPlayer");
-        const audioSource = document.getElementById("audioSource");
+        // 1. UPLOAD LOGIC
+        window.uploadTrack = async function() {
+            const file = document.getElementById('fileInput').files[0];
+            if (!file) return;
 
-        // Fired when buttons are clicked
-        window.updateTrack = function(trackNumber) {
-            set(trackRef, trackNumber);
+            const storageRef = sRef(storage, 'music/' + file.name);
+            await uploadBytes(storageRef, file);
+            const url = await getDownloadURL(storageRef);
+
+            // Save song info to database
+            const songsRef = ref(db, 'songs');
+            push(songsRef, { name: file.name, url: url });
         };
 
-        // Fired automatically when database changes
-        onValue(trackRef, (snapshot) => {
-            const trackName = snapshot.val();
-            if (trackName) {
-                // Force reload of the source
-                audioSource.src = trackName + ".mp3";
-                audioPlayer.load();
-                audioPlayer.play().catch(e => console.log("User interaction required for playback"));
-            }
+        // 2. DYNAMIC BUTTON GENERATION
+        const songsRef = ref(db, 'songs');
+        onValue(songsRef, (snapshot) => {
+            const trackList = document.getElementById('trackList');
+            trackList.innerHTML = ""; // Clear current list
+            
+            snapshot.forEach((childSnapshot) => {
+                const song = childSnapshot.val();
+                const btn = document.createElement("button");
+                btn.innerText = song.name;
+                btn.onclick = () => {
+                    const audioPlayer = document.getElementById("audioPlayer");
+                    document.getElementById("audioSource").src = song.url;
+                    audioPlayer.load();
+                    audioPlayer.play();
+                };
+                trackList.appendChild(btn);
+            });
         });
     </script>
 </body>
