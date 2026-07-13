@@ -4,13 +4,13 @@
     <meta charset="UTF-8">
     <title>Rahul Khan World</title>
     <style>
-        #trackButtons { margin-top: 20px; }
-        button { padding: 15px 25px; margin: 5px; cursor: pointer; font-size: 16px; }
+        #trackButtons { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
+        button { padding: 15px 25px; cursor: pointer; font-size: 16px; }
     </style>
 </head>
 <body>
     <h1>Welcome to Rahul Khan World</h1>
-    <p>Select a track. The player will sync in real-time for everyone:</p>
+    <p>Selecting a track syncs it for everyone in real-time:</p>
 
     <div id="trackButtons"></div>
 
@@ -39,28 +39,29 @@
         const db = getDatabase(app);
         const trackRef = ref(db, 'currentTrack');
 
-        // Create buttons 1-5
+        // Dynamically create 10 buttons
         const container = document.getElementById("trackButtons");
-        for (let i = 1; i <= 5; i++) {
+        for (let i = 1; i <= 10; i++) {
             const btn = document.createElement("button");
-            btn.innerHTML = i;
-            btn.onclick = () => set(trackRef, i.toString()); // Only write to DB
+            btn.innerHTML = "Track " + i;
+            // The button ONLY updates the database
+            btn.onclick = () => set(trackRef, i.toString());
             container.appendChild(btn);
         }
 
-        // Dedicated Listener: This runs automatically whenever the database changes
+        // The listener updates the player whenever the database changes
         onValue(trackRef, (snapshot) => {
             const trackNumber = snapshot.val();
-            const audioPlayer = document.getElementById("audioPlayer");
-            const audioSource = document.getElementById("audioSource");
-            
             if (trackNumber) {
+                const audioPlayer = document.getElementById("audioPlayer");
+                const audioSource = document.getElementById("audioSource");
                 const newSource = trackNumber + ".mp3";
-                // Only update and play if it's a different track
+
+                // Only update and play if the track is different from current
                 if (!audioSource.src.includes(newSource)) {
                     audioSource.src = newSource;
                     audioPlayer.load();
-                    audioPlayer.play().catch(e => console.log("Auto-play blocked by browser policy"));
+                    audioPlayer.play().catch(e => console.log("Waiting for user interaction..."));
                 }
             }
         });
