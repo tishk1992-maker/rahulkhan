@@ -1,20 +1,23 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Rahul Khan World - Music Player</title>
+    <meta charset="UTF-8">
+    <title>Rahul Khan World</title>
 </head>
 <body>
     <h1>Welcome to Rahul Khan World</h1>
-    <p>Select a track to play:</p>
+    <p>Click a track to play it:</p>
 
-    <div id="trackList">
-        <button onclick="playTrack('track1')">Song One</button>
-        <button onclick="playTrack('track2')">Song Two</button>
-        <button onclick="playTrack('track3')">Song Three</button>
+    <!-- Buttons for each track -->
+    <div id="trackButtons">
+        <button onclick="updateTrack('1')">Play Track 1</button>
+        <button onclick="updateTrack('2')">Play Track 2</button>
+        <button onclick="updateTrack('3')">Play Track 3</button>
     </div>
 
     <br><br>
-    
+
+    <!-- Audio player -->
     <audio id="audioPlayer" controls>
         <source id="audioSource" src="" type="audio/mpeg">
         Your browser does not support the audio element.
@@ -25,7 +28,7 @@
         import { getDatabase, ref, set, onValue } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
 
         const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
+            apiKey: "AIzaSyD2H-Ccdm4fAq4qtgXqwVOAz4d7z115Ucw",
             authDomain: "rahulkhan-a4f12.firebaseapp.com",
             databaseURL: "https://rahulkhan-a4f12-default-rtdb.firebaseio.com",
             projectId: "rahulkhan-a4f12",
@@ -33,27 +36,32 @@
             messagingSenderId: "324760694486",
             appId: "1:324760694486:web:a57ca86603fd9911fc2377"
         };
-        
+
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
         const trackRef = ref(db, 'currentTrack');
 
-        // This listener updates the audio source when the database changes
+        // Listen for changes in the database
         onValue(trackRef, (snapshot) => {
-            const data = snapshot.val();
-            if (data) {
+            const trackName = snapshot.val();
+            if (trackName) {
                 const audioPlayer = document.getElementById("audioPlayer");
                 const audioSource = document.getElementById("audioSource");
-                audioSource.src = data + ".mp3"; 
+                
+                // Construct the path (e.g., "1.mp3")
+                audioSource.src = trackName + ".mp3";
+                
                 audioPlayer.load();
-                audioPlayer.play();
+                audioPlayer.play().catch(err => {
+                    console.log("Autoplay blocked: Click the play button on the audio bar to start.");
+                });
             }
         });
 
-        // Global function for buttons
-        window.playTrack = function(trackName) {
-            set(trackRef, trackName);
-        }
+        // Function called by buttons
+        window.updateTrack = function(trackNumber) {
+            set(trackRef, trackNumber);
+        };
     </script>
 </body>
 </html>
