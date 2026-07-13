@@ -3,10 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <title>Rahul Khan World</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; padding: 20px; }
+        button { padding: 10px 20px; margin: 5px; cursor: pointer; }
+    </style>
 </head>
 <body>
     <h1>Welcome to Rahul Khan World</h1>
-    <p>Click a track to play it:</p>
+    <p>Click any track to start (or sync) the audio:</p>
 
     <div id="trackButtons">
         <button onclick="updateTrack('1')">Play Track 1</button>
@@ -18,7 +22,6 @@
 
     <audio id="audioPlayer" controls>
         <source id="audioSource" src="" type="audio/mpeg">
-        Your browser does not support the audio element.
     </audio>
 
     <script type="module">
@@ -39,32 +42,22 @@
         const db = getDatabase(app);
         const trackRef = ref(db, 'currentTrack');
 
-        // Logic for when you click a button
+        const audioPlayer = document.getElementById("audioPlayer");
+        const audioSource = document.getElementById("audioSource");
+
+        // Fired when buttons are clicked
         window.updateTrack = function(trackNumber) {
-            const audioPlayer = document.getElementById("audioPlayer");
-            const audioSource = document.getElementById("audioSource");
-            
-            // Force reset: clear source then set new one
-            audioPlayer.pause();
-            audioSource.src = trackNumber + ".mp3";
-            audioPlayer.load();
-            audioPlayer.play().catch(e => console.log("Play error: ", e));
-            
-            // Sync with Firebase
             set(trackRef, trackNumber);
         };
 
-        // Logic for others syncing to your play
+        // Fired automatically when database changes
         onValue(trackRef, (snapshot) => {
             const trackName = snapshot.val();
-            const audioPlayer = document.getElementById("audioPlayer");
-            const audioSource = document.getElementById("audioSource");
-            
-            // Only update if the current loaded track is different from the DB
-            if (trackName && !audioSource.src.includes(trackName + ".mp3")) {
+            if (trackName) {
+                // Force reload of the source
                 audioSource.src = trackName + ".mp3";
                 audioPlayer.load();
-                audioPlayer.play().catch(e => console.log("Sync play error: ", e));
+                audioPlayer.play().catch(e => console.log("User interaction required for playback"));
             }
         });
     </script>
