@@ -4,12 +4,31 @@
     <meta charset="UTF-8">
     <title>Rahul Khan World</title>
     <style>
-        #trackButtons { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
+        /* Logo Styling */
+        .logo-container {
+            display: flex;
+            justify-content: center;
+            padding: 20px 0;
+        }
+        .logo-container img {
+            max-width: 200px;
+            height: auto;
+        }
+
+        /* General Layout */
+        body { text-align: center; font-family: sans-serif; }
+        #trackButtons { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; justify-content: center; }
         button { padding: 15px 25px; cursor: pointer; font-size: 16px; border-radius: 8px; border: 1px solid #ccc; }
         button:hover { background-color: #f0f0f0; }
     </style>
 </head>
 <body>
+
+    <!-- Logo Section -->
+    <div class="logo-container">
+        <img src="main logo.jpg" alt="Rahul Khan Logo">
+    </div>
+
     <h1>Welcome to Rahul Khan World</h1>
     <p>Selecting a track syncs it for everyone in real-time:</p>
 
