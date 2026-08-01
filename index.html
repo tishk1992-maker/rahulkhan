@@ -4,27 +4,28 @@
     <meta charset="UTF-8">
     <title>Rahul Khan World</title>
     <style>
-        /* Logo Styling */
-        .logo-container {
-            display: flex;
-            justify-content: center;
-            padding: 20px 0;
-        }
-        .logo-container img {
-            max-width: 200px;
-            height: auto;
+        .logo-container { display: flex; justify-content: center; padding: 20px 0; }
+        .logo-container img { max-width: 200px; height: auto; }
+
+        body { text-align: center; font-family: sans-serif; }
+        
+        #trackButtons { 
+            display: flex; flex-wrap: wrap; gap: 20px; 
+            margin-top: 20px; justify-content: center; 
         }
 
-        /* General Layout */
-        body { text-align: center; font-family: sans-serif; }
-        #trackButtons { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; justify-content: center; }
-        button { padding: 15px 25px; cursor: pointer; font-size: 16px; border-radius: 8px; border: 1px solid #ccc; }
-        button:hover { background-color: #f0f0f0; }
+        /* Styling for the track card */
+        .track-card { 
+            display: flex; flex-direction: column; align-items: center; 
+            width: 120px; cursor: pointer; border: 1px solid #ccc; 
+            padding: 10px; border-radius: 8px;
+        }
+        .track-card img { width: 100px; height: 100px; object-fit: cover; margin-bottom: 10px; border-radius: 4px; }
+        .track-card button { width: 100%; padding: 10px; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <!-- Logo Section -->
     <div class="logo-container">
         <img src="main logo.jpg" alt="Rahul Khan Logo">
     </div>
@@ -62,13 +63,23 @@
         const audioPlayer = document.getElementById("audioPlayer");
         const audioSource = document.getElementById("audioSource");
 
-        // 1. Create 10 buttons dynamically
+        // 1. Create 20 buttons with images
         const container = document.getElementById("trackButtons");
-        for (let i = 1; i <= 10; i++) {
+        for (let i = 1; i <= 20; i++) {
+            const card = document.createElement("div");
+            card.className = "track-card";
+
+            const img = document.createElement("img");
+            img.src = "Track " + i + ".jpg"; // Ensure these images exist in your folder
+            img.alt = "Track " + i;
+
             const btn = document.createElement("button");
             btn.innerHTML = "Track " + i;
             btn.onclick = () => set(trackRef, i.toString());
-            container.appendChild(btn);
+
+            card.appendChild(img);
+            card.appendChild(btn);
+            container.appendChild(card);
         }
 
         // 2. Real-time sync listener
@@ -77,15 +88,12 @@
             if (!trackNumber) return;
 
             const newSource = trackNumber + ".mp3";
-
-            // Only change and play if it's a new track
             if (audioSource.src.indexOf(newSource) === -1) {
                 audioPlayer.pause();
                 audioSource.src = newSource;
                 audioPlayer.load();
                 audioPlayer.play().catch(e => console.log("Playback interaction required"));
             } else {
-                // If it's the SAME track button clicked again, just restart it
                 audioPlayer.currentTime = 0;
                 audioPlayer.play().catch(e => console.log("Playback error"));
             }
