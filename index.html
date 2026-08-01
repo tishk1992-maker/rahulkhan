@@ -4,24 +4,50 @@
     <meta charset="UTF-8">
     <title>Rahul Khan World</title>
     <style>
+        /* Logo Styling */
         .logo-container { display: flex; justify-content: center; padding: 20px 0; }
         .logo-container img { max-width: 200px; height: auto; }
 
         body { text-align: center; font-family: sans-serif; }
-        
+
+        /* 10-and-10 Grid Layout */
         #trackButtons { 
-            display: flex; flex-wrap: wrap; gap: 20px; 
-            margin-top: 20px; justify-content: center; 
+            display: flex; 
+            flex-wrap: wrap; 
+            gap: 15px; 
+            margin-top: 20px; 
+            justify-content: center; 
+            max-width: 1400px; /* Forces 10 buttons per row */
+            margin-left: auto;
+            margin-right: auto;
         }
 
-        /* Styling for the track card */
         .track-card { 
-            display: flex; flex-direction: column; align-items: center; 
-            width: 120px; cursor: pointer; border: 1px solid #ccc; 
-            padding: 10px; border-radius: 8px;
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            width: 120px; 
+            padding: 10px; 
+            border: 1px solid #ccc; 
+            border-radius: 8px;
         }
-        .track-card img { width: 100px; height: 100px; object-fit: cover; margin-bottom: 10px; border-radius: 4px; }
-        .track-card button { width: 100%; padding: 10px; cursor: pointer; }
+
+        .track-card img { 
+            width: 100px; 
+            height: 100px; 
+            object-fit: cover; 
+            margin-bottom: 10px; 
+            border-radius: 4px; 
+        }
+
+        .track-card button { 
+            width: 100%; 
+            padding: 8px; 
+            cursor: pointer; 
+            font-size: 14px;
+        }
+        
+        .track-card button:hover { background-color: #f0f0f0; }
     </style>
 </head>
 <body>
@@ -63,14 +89,14 @@
         const audioPlayer = document.getElementById("audioPlayer");
         const audioSource = document.getElementById("audioSource");
 
-        // 1. Create 20 buttons with images
+        // Create 20 buttons
         const container = document.getElementById("trackButtons");
         for (let i = 1; i <= 20; i++) {
             const card = document.createElement("div");
             card.className = "track-card";
 
             const img = document.createElement("img");
-            img.src = "Track " + i + ".jpg"; // Ensure these images exist in your folder
+            img.src = "Track " + i + ".jpg";
             img.alt = "Track " + i;
 
             const btn = document.createElement("button");
@@ -82,7 +108,7 @@
             container.appendChild(card);
         }
 
-        // 2. Real-time sync listener
+        // Real-time sync listener
         onValue(trackRef, (snapshot) => {
             const trackNumber = snapshot.val();
             if (!trackNumber) return;
