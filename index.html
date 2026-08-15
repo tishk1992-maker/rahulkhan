@@ -49,6 +49,86 @@
         
         .track-card button:hover { background-color: #f0f0f0; }
 
+        /* Playing Track Display Modal */
+        #activeTrackOverlay {
+            display: none; /* Hidden by default */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.75);
+            z-index: 10000;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        #activeTrackOverlay.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            position: relative;
+            max-width: 90%;
+        }
+
+        /* Container wrapping both the image and the GIF overlay */
+        .image-wrapper {
+            position: relative;
+            width: 320px;
+            height: 320px;
+            margin: 0 auto 15px auto;
+        }
+
+        .image-wrapper img.track-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 8px;
+            display: block;
+        }
+
+        /* GIF overlay styled on top of the main track picture */
+        .image-wrapper img.gif-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 8px;
+            pointer-events: none; /* Allows clicking through if needed */
+            opacity: 0.8; /* Adjust transparency if you want to see the image beneath */
+        }
+
+        .modal-content h2 {
+            margin: 0 0 15px 0;
+            font-size: 22px;
+            color: #333;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #888;
+            cursor: pointer;
+            border: none;
+            background: none;
+        }
+
+        .close-btn:hover {
+            color: #000;
+        }
+
         /* Hidden Bottom-Right Toggle Button */
         #secretPageToggle {
             position: fixed;
@@ -87,6 +167,18 @@
         Your browser does not support the audio element.
     </audio>
 
+    <!-- Overlay for Active Track -->
+    <div id="activeTrackOverlay">
+        <div class="modal-content">
+            <button class="close-btn" id="closeOverlay">&times;</button>
+            <div class="image-wrapper">
+                <img id="overlayTrackImg" class="track-img" src="" alt="Active Track Image">
+                <img src="squer.gif" class="gif-overlay" alt="Playing animation">
+            </div>
+            <h2 id="overlayTrackTitle">Now Playing</h2>
+        </div>
+    </div>
+
     <!-- Hidden Navigation Button -->
     <button id="secretPageToggle" title="Toggle Page"></button>
 
@@ -113,7 +205,24 @@
         const container = document.getElementById("trackButtons");
         const secretToggle = document.getElementById("secretPageToggle");
 
+        const overlay = document.getElementById("activeTrackOverlay");
+        const overlayImg = document.getElementById("overlayTrackImg");
+        const overlayTitle = document.getElementById("overlayTrackTitle");
+        const closeOverlay = document.getElementById("closeOverlay");
+
         let currentPage = 1;
+
+        // Close overlay on click
+        closeOverlay.onclick = () => {
+            overlay.classList.remove("show");
+        };
+
+        // Close overlay if background dark area is clicked
+        overlay.onclick = (e) => {
+            if (e.target === overlay) {
+                overlay.classList.remove("show");
+            }
+        };
 
         // Function to render 20 track buttons according to current page
         function loadPage(page) {
@@ -152,6 +261,11 @@
         onValue(trackRef, (snapshot) => {
             const trackNumber = snapshot.val();
             if (!trackNumber) return;
+
+            // Update overlay image and title
+            overlayImg.src = "Track " + trackNumber + ".jpg";
+            overlayTitle.textContent = "Now Playing: Track " + trackNumber;
+            overlay.classList.add("show");
 
             const newSource = trackNumber + ".mp3";
             if (audioSource.src.indexOf(newSource) === -1) {
