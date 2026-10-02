@@ -4,54 +4,30 @@
     <meta charset="UTF-8">
     <title>Rahul Khan World</title>
     <style>
-        /* Logo Styling */
-        .logo-container { display: flex; justify-content: center; padding: 20px 0; }
-        .logo-container img { max-width: 200px; height: auto; }
-
-        body { text-align: center; font-family: sans-serif; background-color: #f9f9f9; }
+        body { 
+            text-align: center; 
+            font-family: sans-serif; 
+            background-color: #f9f9f9; 
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
 
         /* Message Styling */
         .no-service-message {
             font-size: 24px;
             font-weight: bold;
             color: #555;
-            margin-top: 50px;
-        }
-
-        /* Hidden Bottom-Right Toggle Button */
-        #secretPageToggle {
-            position: fixed;
-            bottom: 5px;
-            right: 5px;
-            width: 25px;
-            height: 25px;
-            background-color: transparent;
-            border: none;
-            outline: none;
-            opacity: 0.02;
-            cursor: pointer;
-            z-index: 9999;
-        }
-
-        #secretPageToggle:hover {
-            opacity: 0.2;
         }
     </style>
 </head>
 <body>
 
-    <div class="logo-container">
-        <img src="main logo.jpg" alt="Rahul Khan Logo">
-    </div>
-
-    <h1>Welcome to Rahul Khan World</h1>
-    
     <div class="no-service-message">
         no service ......
     </div>
-
-    <!-- Hidden Navigation Button -->
-    <button id="secretPageToggle" title="Toggle Page"></button>
 
 </body>
 </html>
